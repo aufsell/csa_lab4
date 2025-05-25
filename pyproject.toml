@@ -37,7 +37,9 @@ ignore = [
   "RUF003",
   "PTH123",
   "PTH118",
-  "UP032"
+  "UP032",
+  "UP007",
+  "C901"
 ]
 
 unfixable = [
