@@ -22,10 +22,10 @@ jobs:
       run: python3 -m pip install --upgrade pip && pip install ruff mypy pytest pytest-golden coverage
 
     - name: Run ruff
-      run: ruff check src
+      run: ruff check .
 
     - name: Run mypy
-      run: mypy src
+      run: mypy .
 
     - name: Run tests
       run: pytest
