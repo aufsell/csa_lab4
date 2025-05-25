@@ -1,19 +1,23 @@
+from __future__ import annotations
+
 from enum import Enum
 
-STACK_SIZE = 512                     
-MEMORY_SIZE = 1024                   
-MAX_NUMBER = (1 << 31) - 1           
-MIN_NUMBER = -(1 << 31)              
+STACK_SIZE = 512
+MEMORY_SIZE = 1024
+MAX_NUMBER = (1 << 31) - 1
+MIN_NUMBER = -(1 << 31)
+INPUT_PORT = 0
+OUTPUT_PORT = 1
 
 
 class Variable:
     """Представляет переменную в памяти."""
 
     def __init__(self, name: str, address: int, data: list[int], is_string: bool):
-        self.name = name            
-        self.address = address      
-        self.data = data            
-        self.is_string = is_string  
+        self.name = name
+        self.address = address
+        self.data = data
+        self.is_string = is_string
 
 
 class Opcode(Enum):
@@ -29,7 +33,7 @@ class Opcode(Enum):
     DUP     = ("dup",     "01000")
     OVER    = ("over",    "01001")
     SWAP    = ("swap",    "01010")
-    EAM     = ("eam",     "01011")
+    CMP     = ("cmp",     "01011")
     JMP     = ("jmp",     "01100")
     JZ      = ("jz",      "01101")
     JNZ     = ("jnz",     "01110")
@@ -43,18 +47,20 @@ class Opcode(Enum):
     DI      = ("di",      "10110")
     IRET    = ("iret",    "10111")
     HALT    = ("halt",    "11000")
+    IN      = ("in",      "11001")
+    OUT     = ("out",     "11010")
 
     def __init__(self, mnemonic: str, binary: str):
-        self.mnemonic = mnemonic  
-        self.binary = binary      
+        self.mnemonic = mnemonic
+        self.binary = binary
 
     @classmethod
-    def from_string(cls, mnemonic: str) -> "Opcode | None":
+    def from_string(cls, mnemonic: str) -> Opcode | None:
         """Находит Opcode по мнемонике."""
         return next((op for op in cls if op.mnemonic == mnemonic), None)
 
     @classmethod
-    def from_binary(cls, binary: str) -> "Opcode | None":
+    def from_binary(cls, binary: str) -> Opcode | None:
         """Находит Opcode по бинарному коду."""
         return next((op for op in cls if op.binary == binary), None)
 
@@ -63,8 +69,8 @@ class Command:
     """Представляет одну команду (инструкцию) в коде."""
 
     def __init__(self, opcode: Opcode, operand: int | None = None):
-        self.opcode = opcode        
-        self.operand = operand      
+        self.opcode = opcode
+        self.operand = operand
 
 
 def write_commented_code(filename: str, commented_code: str) -> None:
@@ -104,8 +110,17 @@ def binary32_to_int(value: str) -> int:
         num -= 1 << 32
     return num
 
+class UnknownOpcodeError(ValueError):
+    """Вызывается, когда переданный бинарный код не соответствует ни одному опкоду."""
+    def __init__(self, binary: str):
+        super().__init__(f"Unknown opcode binary: {binary}")
+        self.binary = binary
+
 
 def int_to_opcode(value: int) -> Opcode:
     """Извлекает opcode из верхних 5 бит 32-битного целого числа-инструкции."""
     bits = value_to_binary32(value)[:5]
-    return Opcode.from_binary(bits)
+    opcode = Opcode.from_binary(bits)
+    if opcode is None:
+        raise UnknownOpcodeError(bits)
+    return opcode
