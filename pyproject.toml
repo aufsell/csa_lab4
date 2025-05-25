@@ -1,0 +1,22 @@
+[tool.ruff]
+line-length = 120
+select = [
+  "F", "E", "W", "N", "I", "C90", "UP", "ERA", "YTT",
+  "ASYNC", "A", "COM", "FA", "ICN", "INP", "T20",
+  "PT", "Q", "RET", "PTH", "PD", "TRY", "RUF"
+]
+ignore = [
+  "COM812",
+  "E501",
+  "T201",
+  "RUF002",
+  "RUF003",
+  "PTH123",
+  "PTH118",
+  "UP032",
+]
+unfixable = ["ERA001"]
+src = ["src"]
+
+[tool.ruff.mccabe]
+max-complexity = 7

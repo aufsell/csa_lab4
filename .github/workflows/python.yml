@@ -1,0 +1,31 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-type-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.13.3
+
+    - name: Install dependencies
+      run: python3 -m pip install --upgrade pip && pip install ruff mypy pytest pytest-golden coverage
+
+    - name: Run ruff
+      run: ruff check src
+
+    - name: Run mypy
+      run: mypy src
+
+    - name: Run tests
+      run: pytest
